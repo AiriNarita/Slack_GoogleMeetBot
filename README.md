@@ -1,0 +1,2 @@
+# Slack_GoogleMeetBot
+GASを簡易サーバーにしてSlackBotでGoogleMeetのリンクを自動送信するBOT！
