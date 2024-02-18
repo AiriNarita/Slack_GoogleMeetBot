@@ -1,4 +1,4 @@
-# Slack apps_GoogleMeetBot
+# Slack app_GoogleMeetBot
 
 🚩 **Table of Contents**
 
