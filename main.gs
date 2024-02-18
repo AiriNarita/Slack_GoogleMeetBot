@@ -1,14 +1,17 @@
+// Tokenの変数
 const VERIFICATION_TOKEN = 'xxxxxxxxxxxxxxxxxxxx';
 const BOT_USER_OAUTH_TOKEN = 'xoxb-xxxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxx'
 const SLACK_POST_URL = 'https://slack.com/api/chat.postMessage';
 
 
 /* Google MeetのURLを作成 */
+// Googleカレンダーに一時的なイベントを挿入し、そのイベントに関連付けられたGoogle MeetのURLを取得する関数。
 function getMeetUrl() {
   const calendarId = 'primary'; 
   const dt = new Date();
   const date = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate();
   const requestId = Math.random().toString(32).substring(2); 
+  // イベントをGoogleカレンダーに挿入し、conferenceDataVersionを指定
   const events = Calendar.Events.insert({
     summary: 'tmp_event',
     singleEvents: true,
@@ -25,8 +28,10 @@ function getMeetUrl() {
     }
   }, calendarId, { conferenceDataVersion: 1 })
 
+  // // カレンダーはいらないから削除
   Calendar.Events.remove(calendarId, events.id);
 
+  // イベントの作成が成功した場合はGoogle MeetのURLを返す
   if (events.conferenceData.createRequest.status.statusCode === 'success') {
     const meetUrl = events.conferenceData.entryPoints[0].uri;
     return meetUrl;
@@ -50,7 +55,7 @@ function postMessage(event, message) {
 
 /* Slackにメッセージを送信 */
 function doPost(e) {
-  const meetUrl = getMeetUrl();
+  const meetUrl = getMeetUrl(); // Google MeetのURLを取得
   let message = meetUrl !== undefined ? `Meetの部屋を作ったよ\n${meetUrl}` : 'URL生成できませんでした。';
   let response = {
     response_type: 'in_channel',
@@ -79,7 +84,8 @@ function doPost(e) {
       if (contents.event.subtype && contents.event.subtype === 'bot_message') {
         return null;
       }
-
+  
+      // Slackにメンションがあった場合、メッセージを投稿
       if (contents.event.type === 'app_mention') {
         postMessage(contents.event, message);
       }
